@@ -1,0 +1,98 @@
+# Local formatting configuration
+.clang-format
+
+# VS Code workspace settings
+.vscode/
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+*.so.*
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# ROS 2 / colcon build directories
+build/
+install/
+log/
+Build/
+build-*/
+
+# Local ROS 2 / colcon state
+.ros/
+.colcon/
+.colcon_install_layout
+
+# Python artifacts from ROS 2 launch files and packages
+__pycache__/
+*.py[cod]
+
+# ROS 2 bag recordings
+rosbag2_*/
+*.db3
+*.db3-shm
+*.db3-wal
+*.db3.zstd
+*.mcap
+*.mcap.zstd
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+
+# vcpkg
+vcpkg_installed/
+
+# debug information files
+*.dwo
+
+# test output & cache
+Testing/
+.cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/

@@ -1,0 +1,35 @@
+controller_manager:
+  ros__parameters:
+    use_sim_time: true
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    leg_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+joint_state_broadcaster:
+  ros__parameters:
+    use_sim_time: true
+
+leg_controller:
+  ros__parameters:
+    use_sim_time: true
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+    allow_partial_joints_goal: false
+
+drive_controller:
+  ros__parameters:
+    use_sim_time: true
+    left_wheel_names: [FL_foot_joint, RL_foot_joint]
+    right_wheel_names: [FR_foot_joint, RR_foot_joint]
+    odom_frame_id: odom
+    base_frame_id: base
+    tf_frame_prefix_enable: false
+    enable_odom_tf: true
+    open_loop: false
+    position_feedback: true
+    publish_rate: 50.0
+    pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.01]
+    twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.01]

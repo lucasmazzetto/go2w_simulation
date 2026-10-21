@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- The launch file supplies an upstream URDF with wheel-collision macro slots.
+     All simulation geometry, control interfaces and sensors are defined here. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="$(arg robot_name)">
+  <xacro:arg name="robot_name" default="go2w" />
+  <xacro:arg name="enable_sensors" default="true" />
+  <xacro:property name="settings" value="${xacro.load_yaml(xacro.arg('settings_file'))['/**']['ros__parameters']}" />
+  <xacro:property name="robot_name" value="$(arg robot_name)" />
+
+  <xacro:include filename="go2w_control.xacro" />
+  <xacro:include filename="$(arg description_file)" />
+  <xacro:go2w_control />
+
+  <xacro:if value="$(arg enable_sensors)">
+    <xacro:property name="sensors" value="${xacro.load_yaml(xacro.arg('sensors_file'))}" />
+    <xacro:include filename="go2w_sensors.xacro" />
+    <xacro:go2w_sensors sensors="${sensors}" visual_links="${xacro.arg('visual_links').split()}" />
+  </xacro:if>
+</robot>

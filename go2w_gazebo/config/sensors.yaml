@@ -1,0 +1,45 @@
+# Built-in sensors and approximate RGB camera.
+body_imu:
+  enabled: true
+  frame: imu
+  update_rate: 500.0
+  gyroscope_noise_stddev: 0.0       # rad/s
+  accelerometer_noise_stddev: 0.0   # m/s^2
+  temperature: 25                  # placeholder, native int8 degrees C
+lidar_imu:
+  enabled: true
+  frame: utlidar_imu
+  update_rate: 250.0
+  gyroscope_noise_stddev: 0.0
+  accelerometer_noise_stddev: 0.0
+lidar:
+  enabled: true
+  frame: radar
+  update_rate: 10.0
+  horizontal_samples: 120
+  vertical_samples: 18             # virtual rows, not physical beams
+  vertical_min_angle: 0.0          # sensor-local hemisphere [rad]
+  vertical_max_angle: 1.5707963267948966
+  range_min: 0.05                  # m
+  range_max: 20.0                  # conservative L1 PM baseline [m]
+  range_resolution: 0.008          # m
+  range_noise_stddev: 0.0          # m
+camera:
+  enabled: true
+  frame: front_camera
+  optical_frame: front_camera_optical
+  image_topic: /camera/image_raw
+  info_topic: /camera/camera_info
+  width: 1280
+  height: 720
+  update_rate: 15.0                # Go2 integration default, not a Go2-W firmware guarantee
+  reference_width: 1280
+  reference_height: 720
+  fx: 864.39938                    # reference pixel intrinsics; scaled with output size
+  fy: 863.73849
+  cx: 639.19798
+  cy: 373.28118
+  xyz: [0.32715, -0.00003, 0.04297] # official Go2 mount, assumed for Go2-W [m]
+  rpy: [0.0, 0.0, 0.0]            # radians; optical axes added separately
+  clip_near: 0.02                  # rendering choice [m], not hardware depth range
+  clip_far: 100.0                  # rendering choice [m]

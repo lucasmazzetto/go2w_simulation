@@ -1,0 +1,27 @@
+# Interactive shell customization for the Go2-W simulation container.
+# This file is passed to interactive Bash by run_docker.sh.
+
+case $- in
+    *i*) ;;
+    *) return ;;
+esac
+
+if [[ -z "${TERM:-}" || "$TERM" == "dumb" ]]; then
+    export TERM=xterm-256color
+fi
+
+__go2w_git_branch() {
+    command git rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's/^/( /; s/$/ )/'
+}
+
+if [[ -t 1 ]]; then
+    PS1='\[\e[1;36m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\] \[\e[1;35m\]$(__go2w_git_branch)\[\e[0m\]\$ '
+else
+    PS1='\u@\h:\w\$ '
+fi
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'

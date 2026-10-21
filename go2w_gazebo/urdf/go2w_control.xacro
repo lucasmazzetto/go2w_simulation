@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="wheel_collision" params="side">
+    <collision>
+      <origin xyz="0 ${side * settings.wheel_lateral_offset} 0" rpy="${pi / 2} 0 0" />
+      <geometry>
+        <cylinder radius="${settings.wheel_radius}" length="${settings.wheel_width}" />
+      </geometry>
+    </collision>
+  </xacro:macro>
+
+  <xacro:macro name="controlled_joint" params="name command initial:=0.0">
+    <joint name="${name}">
+      <command_interface name="${command}" />
+      <state_interface name="position"><param name="initial_value">${initial}</param></state_interface>
+      <state_interface name="velocity"><param name="initial_value">0.0</param></state_interface>
+      <state_interface name="effort" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="leg_interfaces" params="leg">
+    <xacro:controlled_joint name="${leg}_hip_joint" command="position" initial="${settings.standing_hip}" />
+    <xacro:controlled_joint name="${leg}_thigh_joint" command="position" initial="${settings.standing_thigh}" />
+    <xacro:controlled_joint name="${leg}_calf_joint" command="position" initial="${settings.standing_calf}" />
+  </xacro:macro>
+
+  <xacro:macro name="wheel_contact" params="leg">
+    <gazebo reference="${leg}_foot">
+      <mu1>${settings.wheel_friction}</mu1>
+      <mu2>${settings.wheel_friction}</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="go2w_control" params="">
+    <ros2_control name="Go2WGazeboSystem" type="system">
+      <hardware><plugin>gz_ros2_control/GazeboSimSystem</plugin></hardware>
+      <xacro:leg_interfaces leg="FL" />
+      <xacro:leg_interfaces leg="FR" />
+      <xacro:leg_interfaces leg="RL" />
+      <xacro:leg_interfaces leg="RR" />
+      <xacro:controlled_joint name="FL_foot_joint" command="velocity" />
+      <xacro:controlled_joint name="FR_foot_joint" command="velocity" />
+      <xacro:controlled_joint name="RL_foot_joint" command="velocity" />
+      <xacro:controlled_joint name="RR_foot_joint" command="velocity" />
+    </ros2_control>
+    <xacro:wheel_contact leg="FL" />
+    <xacro:wheel_contact leg="FR" />
+    <xacro:wheel_contact leg="RL" />
+    <xacro:wheel_contact leg="RR" />
+    <gazebo>
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(arg controller_file)</parameters>
+        <hold_joints>true</hold_joints>
+        <position_proportional_gain>${settings.position_proportional_gain}</position_proportional_gain>
+        <ros>
+          <remapping>/robot_description:=/go2w_gazebo/robot_description</remapping>
+          <remapping>/drive_controller/odom:=/odom</remapping>
+        </ros>
+      </plugin>
+      <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+        <publish_link_pose>false</publish_link_pose>
+        <publish_visual_pose>false</publish_visual_pose>
+        <publish_collision_pose>false</publish_collision_pose>
+        <publish_sensor_pose>false</publish_sensor_pose>
+        <publish_model_pose>true</publish_model_pose>
+        <publish_nested_model_pose>true</publish_nested_model_pose>
+        <use_pose_vector_msg>true</use_pose_vector_msg>
+        <update_frequency>50</update_frequency>
+        <topic>/model/${robot_name}/pose</topic>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+</robot>

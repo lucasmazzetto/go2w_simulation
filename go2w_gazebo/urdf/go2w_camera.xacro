@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="front_camera" params="camera">
+    <xacro:sensor_frame child="${camera.frame}" parent="base"
+                        xyz="${camera.xyz}" rpy="${camera.rpy}" />
+    <xacro:sensor_frame child="${camera.optical_frame}" parent="${camera.frame}"
+                        rpy="${[-pi / 2, 0, -pi / 2]}" />
+    <xacro:property name="fx" value="${camera.fx * camera.width / camera.reference_width}" />
+    <xacro:property name="fy" value="${camera.fy * camera.height / camera.reference_height}" />
+    <xacro:property name="cx" value="${camera.cx * camera.width / camera.reference_width}" />
+    <xacro:property name="cy" value="${camera.cy * camera.height / camera.reference_height}" />
+    <gazebo reference="base">
+      <sensor name="camera" type="camera">
+        <pose>${' '.join(map(str, camera.xyz + camera.rpy))}</pose>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <update_rate>${camera.update_rate}</update_rate>
+        <gz_frame_id>${camera.optical_frame}</gz_frame_id>
+        <topic>/go2w_gazebo/${robot_name}/camera/image</topic>
+        <camera name="front_camera">
+          <optical_frame_id>${camera.optical_frame}</optical_frame_id>
+          <camera_info_topic>/go2w_gazebo/${robot_name}/camera/camera_info</camera_info_topic>
+          <horizontal_fov>${2 * atan(camera.width / (2 * fx))}</horizontal_fov>
+          <image><width>${camera.width}</width><height>${camera.height}</height><format>R8G8B8</format></image>
+          <clip><near>${camera.clip_near}</near><far>${camera.clip_far}</far></clip>
+          <lens>
+            <type>gnomonical</type>
+            <intrinsics><fx>${fx}</fx><fy>${fy}</fy><cx>${cx}</cx><cy>${cy}</cy><s>0</s></intrinsics>
+            <projection>
+              <p_fx>${fx}</p_fx><p_fy>${fy}</p_fy><p_cx>${cx}</p_cx><p_cy>${cy}</p_cy><tx>0</tx><ty>0</ty>
+            </projection>
+          </lens>
+          <distortion><k1>0</k1><k2>0</k2><k3>0</k3><p1>0</p1><p2>0</p2></distortion>
+          <!-- See both robot and world visuals; exclude OGRE2's reserved bits. -->
+          <visibility_mask>1073741823</visibility_mask>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

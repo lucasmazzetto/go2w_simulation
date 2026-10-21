@@ -1,0 +1,19 @@
+/**:
+  ros__parameters:
+    # Wheel contact geometry, measured from Unitree's wheel meshes [m].
+    wheel_radius: 0.086
+    wheel_width: 0.052
+    wheel_lateral_offset: 0.048092
+    wheel_friction: 0.8
+    # Fixed standing posture [rad]. All four legs use the same values.
+    standing_hip: 0.0
+    standing_thigh: 0.8
+    standing_calf: -1.5
+    controller_update_rate: 200
+    position_proportional_gain: 0.1
+    # Conservative flat-ground driving limits.
+    max_linear_velocity: 0.5       # m/s
+    max_angular_velocity: 0.75     # rad/s
+    max_linear_acceleration: 0.5   # m/s^2
+    max_angular_acceleration: 0.75 # rad/s^2
+    cmd_vel_timeout: 0.5           # simulation seconds

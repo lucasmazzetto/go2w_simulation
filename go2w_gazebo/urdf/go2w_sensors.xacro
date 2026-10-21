@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="go2w_camera.xacro" />
+
+  <xacro:macro name="sensor_frame" params="child parent xyz:=${[0,0,0]} rpy:=${[0,0,0]}">
+    <link name="${child}" />
+    <joint name="${child}_sensor_mount" type="fixed">
+      <parent link="${parent}" /><child link="${child}" />
+      <origin xyz="${' '.join(map(str, xyz))}" rpy="${' '.join(map(str, rpy))}" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="imu_noise" params="axis deviation">
+    <xacro:element xacro:name="${axis}">
+      <noise type="gaussian"><mean>0</mean><stddev>${deviation}</stddev></noise>
+    </xacro:element>
+  </xacro:macro>
+
+  <xacro:macro name="imu_sensor" params="name config parent xyz:=${[0,0,0]} rpy:=${[0,0,0]}">
+    <gazebo reference="${parent}">
+      <sensor name="${name}" type="imu">
+        <pose>${' '.join(map(str, xyz + rpy))}</pose>
+        <always_on>true</always_on><visualize>false</visualize>
+        <update_rate>${config.update_rate}</update_rate>
+        <gz_frame_id>${config.frame}</gz_frame_id>
+        <topic>/go2w_gazebo/${robot_name}/${name}</topic>
+        <imu>
+          <orientation_reference_frame>
+            <localization>CUSTOM</localization><custom_rpy parent_frame="world">0 0 0</custom_rpy>
+          </orientation_reference_frame>
+          <angular_velocity>
+            <xacro:imu_noise axis="x" deviation="${config.gyroscope_noise_stddev}" />
+            <xacro:imu_noise axis="y" deviation="${config.gyroscope_noise_stddev}" />
+            <xacro:imu_noise axis="z" deviation="${config.gyroscope_noise_stddev}" />
+          </angular_velocity>
+          <linear_acceleration>
+            <xacro:imu_noise axis="x" deviation="${config.accelerometer_noise_stddev}" />
+            <xacro:imu_noise axis="y" deviation="${config.accelerometer_noise_stddev}" />
+            <xacro:imu_noise axis="z" deviation="${config.accelerometer_noise_stddev}" />
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="lidar_sensor" params="config parent xyz:=${[0,0,0]} rpy:=${[0,0,0]}">
+    <gazebo reference="${parent}">
+      <sensor name="lidar" type="gpu_lidar">
+        <pose>${' '.join(map(str, xyz + rpy))}</pose>
+        <always_on>true</always_on><visualize>false</visualize>
+        <update_rate>${config.update_rate}</update_rate>
+        <gz_frame_id>${config.frame}</gz_frame_id>
+        <topic>/go2w_gazebo/${robot_name}/lidar</topic>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>${config.horizontal_samples}</samples><resolution>1</resolution>
+              <min_angle>${-pi}</min_angle>
+              <!-- Gazebo includes both endpoints; avoid duplicating the first column. -->
+              <max_angle>${pi - 2 * pi / config.horizontal_samples}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>${config.vertical_samples}</samples><resolution>1</resolution>
+              <min_angle>${config.vertical_min_angle}</min_angle><max_angle>${config.vertical_max_angle}</max_angle>
+            </vertical>
+          </scan>
+          <range><min>${config.range_min}</min><max>${config.range_max}</max><resolution>${config.range_resolution}</resolution></range>
+          <noise><type>gaussian</type><mean>0</mean><stddev>${config.range_noise_stddev}</stddev></noise>
+          <visibility_mask>1</visibility_mask>
+        </lidar>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="lidar_visibility" params="links">
+    <xacro:if value="${len(links) > 0}">
+      <gazebo reference="${links[0]}"><visual><visibility_flags>2</visibility_flags></visual></gazebo>
+      <xacro:lidar_visibility links="${links[1:]}" />
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="go2w_sensors" params="sensors visual_links">
+    <xacro:if value="${sensors.body_imu.enabled}">
+      <xacro:if value="${sensors.body_imu.frame != 'imu'}">
+        <xacro:sensor_frame child="${sensors.body_imu.frame}" parent="imu" />
+      </xacro:if>
+      <xacro:imu_sensor name="body_imu" config="${sensors.body_imu}" parent="imu" />
+    </xacro:if>
+    <xacro:if value="${sensors.lidar_imu.enabled}">
+      <xacro:property name="lidar_imu_offset" value="${[-0.007698, -0.014655, 0.00667]}" />
+      <xacro:sensor_frame child="${sensors.lidar_imu.frame}" parent="radar" xyz="${lidar_imu_offset}" />
+      <xacro:imu_sensor name="lidar_imu" config="${sensors.lidar_imu}" parent="radar"
+                        xyz="${lidar_imu_offset}" />
+    </xacro:if>
+    <xacro:if value="${sensors.lidar.enabled}">
+      <xacro:if value="${sensors.lidar.frame != 'radar'}">
+        <xacro:sensor_frame child="${sensors.lidar.frame}" parent="radar" />
+      </xacro:if>
+      <xacro:lidar_sensor config="${sensors.lidar}" parent="radar" />
+      <xacro:lidar_visibility links="${visual_links}" />
+    </xacro:if>
+    <xacro:if value="${'camera' in sensors and sensors.camera.enabled}">
+      <xacro:front_camera camera="${sensors.camera}" />
+    </xacro:if>
+  </xacro:macro>
+</robot>

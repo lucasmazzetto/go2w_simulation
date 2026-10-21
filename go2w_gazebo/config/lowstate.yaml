@@ -1,0 +1,29 @@
+lowstate_publisher:
+  ros__parameters:
+    # Simulation publication rates; launch-time only, not verified firmware rates.
+    publish_rate: 200.0
+    lf_publish_rate: 50.0
+    # Native units: percent, mA, mV, degrees Celsius; eight-cell full-charge approximation.
+    bms_state.soc: 100
+    bms_state.current: 0
+    bms_state.cell_vol: [4200, 4200, 4200, 4200, 4200, 4200, 4200, 4200, 0, 0, 0, 0, 0, 0, 0]
+    bms_state.bq_ntc: [25, 25]
+    bms_state.mcu_ntc: [25, 25]
+    bms_state.cycle: 0
+    bms_state.version_high: 0
+    bms_state.version_low: 0
+    bms_state.status: 0          # undocumented placeholder, not a healthy-state code
+    power_v: 33.6               # V; independent of cell voltages and SOC
+    power_a: 0.0                # A; independent of BMS current
+    adc_reel: 0.0               # native placeholder; physical units unverified
+    temperature_ntc1: 25
+    temperature_ntc2: 25
+    bit_flag: 0
+    # Hardware order: FR, FL, RR, RL hip/thigh/calf; FR, FL, RR, RL wheels.
+    # Slots 16-19 are unused and must stay zero.
+    motor_state.temperature: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 0, 0, 0, 0]
+    motor_state.mode: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+    motor_state.lost: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    foot_force: [0, 0, 0, 0]       # native integer placeholders; not contact measurements
+    foot_force_est: [0, 0, 0, 0]
+    fan_frequency: [0, 0, 0, 0]    # native uint16 values; unit scaling unverified
