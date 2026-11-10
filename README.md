@@ -49,13 +49,13 @@ Install [Docker Engine](https://docs.docker.com/engine/install/ubuntu/), then bu
 
 ```bash
 cd ~/ros2_ws/src/go2w_simulation
-./build_docker.sh
-./run_docker.sh
+./docker/build.sh
+./docker/run.sh
 ```
 
 The runner starts Gazebo and RViz and automatically uses an available GPU. GUI mode requires X11/XWayland and a readable `XAUTHORITY` file. NVIDIA GPUs require the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
-Use `./run_docker.sh --headless` to run without windows, `./run_docker.sh --cpu-rendering` to use software rendering, or `./run_docker.sh --headless bash` to open a shell.
+Use `./docker/run.sh --headless` to run without windows, `./docker/run.sh --cpu-rendering` to use software rendering, or `./docker/run.sh --headless bash` to open a shell.
 
 ## 🚀 Usage
 
@@ -69,7 +69,7 @@ source ~/ros2_ws/install/setup.bash
 ros2 launch go2w_gazebo sim.launch.py
 ```
 
-For Docker, run `./run_docker.sh` from the repository directory. To use a custom world and initial pose:
+For Docker, run `./docker/run.sh` from the repository directory. To use a custom world and initial pose:
 
 ```bash
 ros2 launch go2w_gazebo sim.launch.py world:=/absolute/path/world.sdf x:=1.0 y:=2.0 z:=0.43 Y:=1.57
@@ -95,10 +95,10 @@ Use a negative `linear.x` to reverse, or set `linear.x` to zero and `angular.z` 
 ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist '{}'
 ```
 
-With Docker, run commands in another terminal by prefixing them with `./run_docker.sh --headless`:
+With Docker, run commands in another terminal by prefixing them with `./docker/run.sh --headless`:
 
 ```bash
-./run_docker.sh --headless ros2 topic pub --rate 20 /cmd_vel geometry_msgs/msg/Twist '{linear: {x: 0.2}, angular: {z: 0.0}}'
+./docker/run.sh --headless ros2 topic pub --rate 20 /cmd_vel geometry_msgs/msg/Twist '{linear: {x: 0.2}, angular: {z: 0.0}}'
 ```
 
 ### Visualize the Model
@@ -109,7 +109,7 @@ To view the robot in RViz with joint sliders, run:
 ros2 launch go2w_description display.launch.py
 ```
 
-With Docker, use `./run_docker.sh ros2 launch go2w_description display.launch.py`.
+With Docker, use `./docker/run.sh ros2 launch go2w_description display.launch.py`.
 
 ## ⚙️ Parameters
 

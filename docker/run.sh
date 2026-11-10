@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
     cat <<'EOF'
-Usage: ./run_docker.sh [--headless] [--cpu-rendering] [--] [command [args...]]
+Usage: ./docker/run.sh [--headless] [--cpu-rendering] [--] [command [args...]]
 
 Start Gazebo and RViz, forwarding the Linux X11/XWayland display.
 Use --headless to run the simulation without opening windows.
@@ -12,11 +12,11 @@ Use --cpu-rendering to force CPU rendering instead.
 A supplied command replaces the image's default launch command.
 
 Examples:
-  ./run_docker.sh
-  ./run_docker.sh --headless
-  ./run_docker.sh --cpu-rendering
-  ./run_docker.sh bash
-  ./run_docker.sh --headless ros2 launch go2w_description description.launch.py
+  ./docker/run.sh
+  ./docker/run.sh --headless
+  ./docker/run.sh --cpu-rendering
+  ./docker/run.sh bash
+  ./docker/run.sh --headless ros2 launch go2w_description description.launch.py
 
 Set GO2W_DOCKER_IMAGE to override the default go2w_simulation:jazzy tag.
 The default simulation container is named go2w_simulation.
@@ -59,7 +59,7 @@ done
 
 image_tag="${GO2W_DOCKER_IMAGE:-go2w_simulation:jazzy}"
 if ! docker image inspect "$image_tag" >/dev/null 2>&1; then
-    printf 'Cannot access image %s. Check Docker and run build_docker.sh first.\n' \
+    printf 'Cannot access image %s. Check Docker and run docker/build.sh first.\n' \
         "$image_tag" >&2
     exit 1
 fi
