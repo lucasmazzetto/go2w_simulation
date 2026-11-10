@@ -1,3 +1,6 @@
 [submodule "go2w_description"]
 	path = go2w_description
 	url = https://github.com/lucasmazzetto/go2w_description.git
+[submodule "go2w_gazebo"]
+	path = go2w_gazebo
+	url = git@github.com:lucasmazzetto/go2w_gazebo.git
